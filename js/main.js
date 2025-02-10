@@ -1,10 +1,3 @@
-/* =================================
-------------------------------------
-	EndGam - Gaming Magazine Template
-	Version: 1.0
- ------------------------------------
- ====================================*/
-
 
 'use strict';
 
@@ -77,6 +70,42 @@ $(window).on('load', function() {
 	$('#stickySidebar').stickySidebar({
 	    topSpacing: 60,
 	    bottomSpacing: 60
+	});
+	$('#orderForm').submit(async (e) => {
+		e.preventDefault();
+
+		const orderData = {
+			name: $('#name').val().trim(),
+			service: $('#service').val(),
+			price: $('#price').val(),
+			paymentMethod: $('#payment').val(),
+			email: $('#email').val(),
+			code: $('#code').val(),
+			description: $('#description').val().trim(), // ✅ Include description
+			status: 'Pending'
+		};
+
+		try {
+			const response = await fetch('http://localhost:7071/api/orders', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify(orderData)
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(`Server Error: ${response.status} - ${errorText}`);
+			}
+
+			const result = await response.json();
+			alert('Order submitted successfully! Order ID: ' + result.orderId);
+		} catch (error) {
+			console.error('Fetch Error:', error);
+			alert('Error submitting order: ' + error.message);
+		}
 	});
 
 
